@@ -11,33 +11,19 @@ const { Content, Header } = Layout;
 
 class SignInContainer extends PureComponent {
   static propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        token: PropTypes.string,
-      }),
-    }).isRequired,
     login: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      isFocus: false,
-      user: '',
       email: '',
-      isEmailValidate: true
+      password: '',
+      isFocus: false
     }
   }
 
   componentDidMount() {
-    let token = this.props.match.params.token;
-    if (token) {
-      promisify(this.props.login, { token: token})
-        .then((user) => {
-          this.setState(...this.state, {user: user});
-        })
-        .catch(e => console.log(e));
-    }
   }
 
   handleEmail = () => {
@@ -45,57 +31,41 @@ class SignInContainer extends PureComponent {
   }
 
   updateEmailValue = (evt) => {
-    this.setState({
+    this.setState(...this.state,{
       email: evt.target.value
+    }, () => {
+      if(validateEmail(this.state.email)) {
+        this.setState(...this.state, {isEmailValidate: true});  
+      } else {
+        this.setState(...this.state, {isEmailValidate: false});  
+      }
     });
   }
 
-  showValidationPage = () => {
+  updatePasswordValue = (evt) => {
+    this.setState(...this.state, {password: evt.target.value})
+  }
+
+  showAdminDashboard = () => {
     if (this.state.email.length !== 0 && validateEmail(this.state.email)) {
       this.setState(...this.state, {isEmailValidate: true});
       promisify(this.props.genToken, { email: this.state.email})
         .then((user) => {
-          this.props.history.push('/validation');
+          console.log(user)
         })
         .catch(e => console.log(e));
     } else {
       this.setState(...this.state, {isEmailValidate: false});
     }
+  }
 
-    if (this.state.user.email) {
-      this.props.history.push('/validation');
-    }
+  showSignupPage = () => {
+
   }
 
   render () {
     var continueButton, emailInput, msg = '';
-    emailInput = <Input value={this.state.email} placeholder="Email Address" onClick={this.handleEmail} onChange={this.updateEmailValue} />
-    continueButton = <Button className="continue_btn" onClick={this.showValidationPage}>CONTINUE</Button>
-    if (this.state.user !== '') {
-      emailInput = <Input value={this.state.user.email ? this.state.user.email : '' } readOnly="true" placeholder="Email Address" onClick={this.handleEmail} />
-      switch(this.state.user.approvalStatus) {
-        case 'NO_SUBMISSION_YET':
-          continueButton = <Button className="continue_btn" onClick={this.showValidationPage}>CONTINUE</Button>
-        break;
-        case 'PENDING':
-          continueButton = <Button disabled="true" className="continue_btn">PENDING</Button>
-        break;
-        case 'APPROVED':
-          continueButton = <Button className="continue_btn kyc_complete_btn">KYC COMPLETE</Button>
-          emailInput = <Input className="kyc_complete_input" value={this.state.user.email ? this.state.user.email : '' } placeholder="Email Address" onClick={this.handleEmail} suffix={<Icon style={{ fontSize: 16, color: '#3cb878' }} type="check-circle" /> }/> 
-          msg = <span className="kyc_complete_msg">User has had a succssful review</span>
-        break;
-        case 'ACTION_REQUESTED':
-          continueButton = <Button className="continue_btn kyc_error" onClick={this.showValidationPage}>KYC ERROR</Button>
-          emailInput = <Input className="kyc_error_input" value={this.state.user.email ? this.state.user.email : '' } placeholder="Email Address" onClick={this.handleClick} suffix={<Icon style={{ fontSize: 16, color: '#e34132' }} type="question-circle" /> }/>
-          msg = <span className="kyc_error_msg">Insufficent information</span>
-        break;
-        case 'BLOCKED':
-          continueButton = <Button disabled="true" className="continue_btn">BLOCKED</Button>
-        break;
-      }
-    }
-
+        
     return (
       <div className="block">
         <Layout>
@@ -117,7 +87,12 @@ class SignInContainer extends PureComponent {
                   <span className="label_name">{ this.state.isEmailValidate ? 'Email Address' : 'Invalid Email'}</span>
                   : null
                   }
-                  { emailInput }
+                  <Input type="email" value={this.state.email} placeholder="Email Address" onClick={this.handleEmail} onChange={this.updateEmailValue} />
+                </Col>
+              </Row>
+              <Row className="password_area">
+                <Col offset={4} span={16}>
+                  <Input type="password" value={this.state.password} placeholder="Password" onChange={this.updatePasswordValue} />
                 </Col>
               </Row>
               <Row className="msg_area">
@@ -127,7 +102,12 @@ class SignInContainer extends PureComponent {
               </Row>
               <Row>
                 <Col offset={4} span={16}>
-                  { continueButton }
+                  <Button className="continue_btn signin_btn" onClick={this.showAdminDashboard}>Sign In</Button>
+                </Col>
+              </Row>
+              <Row>
+                <Col offset={4} span={16}>
+                  <Button className="continue_btn signup_btn" onClick={this.showSignupPage}>Sign Up</Button>
                 </Col>
               </Row>
             </Content>
@@ -143,13 +123,11 @@ const mapStateToProps = ({auth}) => ({
 });
 const mapDisptachToProps = (dispatch) => {
   const {
-    login,
-    genToken
+    login
   } = authActionCreators;
 
   return bindActionCreators({
-    login,
-    genToken
+    login
   }, dispatch);
 }
 
