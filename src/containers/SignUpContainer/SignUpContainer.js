@@ -9,7 +9,7 @@ import logo from 'assets/img/logo.png';
 
 const { Content, Header } = Layout;
 
-class SignInContainer extends PureComponent {
+class SignUpContainer extends PureComponent {
   static propTypes = {
     login: PropTypes.func.isRequired,
   };
@@ -49,14 +49,13 @@ class SignInContainer extends PureComponent {
   showAdminDashboard = () => {
     if (this.state.email.length !== 0 && validateEmail(this.state.email)) {
       this.setState(...this.state, {isEmailValidate: true});
-      promisify(this.props.login, { 
+      promisify(this.props.signUp, { 
         email: this.state.email,
         password: this.state.password
       })
         .then((res) => {
-          if (res.status === 200) {
-            this.props.history.push('/dashboard');      
-          }
+          if (res.status === 200)
+            this.props.history.push('signin');
         })
         .catch(e => console.log(e));
     } else {
@@ -64,8 +63,8 @@ class SignInContainer extends PureComponent {
     }
   }
 
-  showSignupPage = () => {
-    this.props.history.push('/signup');
+  back = () => {
+    this.props.history.push('signin');
   }
 
   render () {
@@ -74,7 +73,11 @@ class SignInContainer extends PureComponent {
     return (
       <div className="block">
         <Layout>
-          <Header className="header"></Header>
+          <Header className="header">
+            <div onClick={this.back}>
+              <Icon style={{ fontSize: 16 }} type="arrow-left" /> <span>BACK</span>
+            </div>
+          </Header>
           <Layout>
             <Content className="main">
               <Row className="sign_logo_area">
@@ -107,12 +110,7 @@ class SignInContainer extends PureComponent {
               </Row>
               <Row>
                 <Col offset={4} span={16}>
-                  <Button className="continue_btn signin_btn" onClick={this.showAdminDashboard}>Sign In</Button>
-                </Col>
-              </Row>
-              <Row>
-                <Col offset={4} span={16}>
-                  <Button className="continue_btn signup_btn" onClick={this.showSignupPage}>Sign Up</Button>
+                  <Button className="continue_btn signup_btn" onClick={this.showAdminDashboard}>Sign Up</Button>
                 </Col>
               </Row>
             </Content>
@@ -123,17 +121,14 @@ class SignInContainer extends PureComponent {
   }  
 }
 
-const mapStateToProps = ({auth}) => ({
-  user: auth.user
-});
 const mapDisptachToProps = (dispatch) => {
   const {
-    login
+    signUp
   } = authActionCreators;
 
   return bindActionCreators({
-    login
+    signUp
   }, dispatch);
 }
 
-export default connectAuth(mapStateToProps, mapDisptachToProps)(SignInContainer);
+export default connectAuth(undefined, mapDisptachToProps)(SignUpContainer);

@@ -10,7 +10,7 @@ import logo from 'assets/img/logo.png';
 
 const { Content, Header } = Layout;
 
-class MatchContainer extends PureComponent {
+class DashboardContainer extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -95,51 +95,6 @@ class MatchContainer extends PureComponent {
                   <Row className="row_title"><Col><span className="logo_title">LABS</span></Col></Row>
                 </Col>
               </Row>
-              <Row  className="validation_title_area">
-                <Col span={12} offset={7}>
-                    <span className="validation_choose_title">&ensp;Upload&ensp;Document</span>
-                </Col>
-              </Row>
-              <Row className="matched_area">
-                <Row className="matched_row">
-                    <Col offset={3} span={7}>
-                        <span className="label_name">FIRST NAME</span>
-                        <Input placeholder="First Name" onChange={(evt) => this.onChangeData('firstname', evt)} />
-                    </Col>
-                    <Col offset={3} span={7}>
-                        <span className="label_name">LAST NAME</span>
-                        <Input placeholder="Last Name" onChange={(evt) => this.onChangeData('lastname', evt)} />
-                    </Col>
-                </Row>
-                <Row className="matched_row">
-                    <Col offset={3} span={7}>
-                        <span className="label_name">BIRTH DATE</span>
-                        <DatePicker placeholder="Birth Date" locale={locale} onChange={(date, dateString) => this.setBirthday(date, dateString)}/>
-                    </Col>
-                    <Col offset={3} span={7}>
-                        <span className="label_name">DOCUMENT EXPIRATION</span>
-                        <DatePicker placeholder="Document Expiration" locale={locale} onChange={(date, dateString) => this.setDocExpireDate(date, dateString)}/>
-                    </Col>
-                </Row>
-                <Row className="matched_row">
-                    <Col offset={3} span={7}>
-                        <span className="label_name">NATIONALITY</span>
-                        <Input placeholder="Nationality" onChange={(evt) => this.onChangeData('nationality', evt)} />
-                    </Col>
-                    <Col offset={3} span={7}>
-                        <span className="label_name">DOCUMENT ID</span>
-                        <Input placeholder="Document Id" onChange={(evt) => this.onChangeData('documentid', evt)} />
-                    </Col>
-                </Row>
-              </Row>
-              <Row className="upload_btn_area">
-                <Col className="take_area" offset={2} span={6}>
-                  <Button className="take_btn" onClick={this.showUploadPage}>Upload<Icon style={{ fontSize: 16, color: '#ffffff'}} type="upload" /></Button>
-                </Col>
-                <Col className="preview_area" offset={8} span={6}>
-                  <Button className="preview_btn" disabled={!this.state.isFilled  ? true : false} onMouseEnter={this.checkInputStatus} onClick={this.showSelfiePage}>Processed<Icon style={{ fontSize: 16, color: '#ffffff'}} type="eye" /></Button>
-                </Col>
-              </Row>
             </Content>
           </Layout>
         </Layout>
@@ -164,4 +119,4 @@ const mapDisptachToProps = (dispatch) => {
 
 export default compose(
   connectAuth(mapStateToProps, mapDisptachToProps),
-)(MatchContainer);
+)(DashboardContainer);

@@ -6,6 +6,7 @@ import RoutesContainer from 'containers/RoutesContainer/RoutesContainer';
 import PrivateRoute from '../components/PrivateRoute/PrivateRoute';
 import PageNotFound from 'components/PageNotFound/PageNotFound';
 import SignInContainer from 'containers/SignInContainer/SignInContainer';
+import SignUpContainer from 'containers/SignUpContainer/SignUpContainer';
 
 import 'assets/styles/App.less';
 
@@ -19,6 +20,7 @@ class App extends Component {
               <Switch>
                 {/* <Redirect exact from="/" to="/signin"/> */}
                 <Route path="/signin" exact component={SignInContainer}/>
+                <Route exact path="/signup" component={SignUpContainer}/>
                 <Route exact path="/404" component={PageNotFound}/>
                 <PrivateRoute path="/" component={RoutesContainer}/>
               </Switch>

@@ -1,14 +1,7 @@
 const auth = {
-  user: {},
-  profile: {},
-  docType: ''
+  user: {}
 };
 
-const validation = {
-  countries: []
-}
-
 export const initialState = {
-  auth,
-  validation
+  auth
 };
