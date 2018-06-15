@@ -3,19 +3,20 @@ import { Select } from 'antd';
 
 class DropdownSelect extends PureComponent {
 
-  onCountryChange = (value) => {
-    this.props.onSelectCountry(value);
+  onChangeItem = (value) => {
+    this.props.onSelectItem(value);
   }
 
   render() {
-    const { className, options, ...props } = this.props;
+    const { className, defaultValue, options, ...props } = this.props;
 
     return (
       <Select
         {...props}
         className={`nrl-dropdown${className ? ' ' + className : ''}`}
         size="large"
-        onChange={(value) => this.onCountryChange(value)}
+        onChange={(value) => this.onChangeItem(value)}
+        defaultValue={defaultValue}
       >
         {
           (options && options.length) && (

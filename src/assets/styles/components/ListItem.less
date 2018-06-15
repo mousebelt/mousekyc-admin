@@ -1,0 +1,127 @@
+@import '../shared.less';
+
+.item {
+    border: 1px solid #f4f4f4;
+
+    &_header {
+        background-color: @white;
+        padding: 0 20px;
+    }
+
+    &_status_icon {
+        width: 50px;
+        height: 50px;
+        background: #eee;
+        border-radius: 50%;
+        border: 1px solid lightgray;
+        margin-top: 5px;
+        text-align: center;
+        line-height: 55px;
+    }
+
+    &_name {
+        color: gray;
+        font-size: 12px;
+    }
+
+    &_email {
+        color: gray;
+        font-size: 12px;
+    }
+
+    &_update {
+        color: lightgrey;
+        font-size: 12px;
+    }
+
+    &_check {
+        background-color: #ffffcc !important;
+        border-radius: 20px;
+        border-color: #ffcc00 !important;
+        color: #ffcc00 !important;
+    }
+
+    &_status {
+        .ant-select-selection {
+            background-color: #ccffcc;
+            border: 1px solid green;
+        }
+
+        .ant-select-selection__placeholder {
+            color: green;
+        }
+
+        .ant-select-arrow {
+            color: green;
+        }
+    }
+    
+    &_photo_area {
+        padding: 20px 20px;
+    }
+
+    &_id_photo {
+        width: calc(100% - 3px);
+        height: 200px;
+        border: 1px dashed gray;
+        background-color: #f1f1f1;
+        color: gray;
+        font-size: 14px;        
+        line-height: 200px;
+        text-align: center;
+    }
+
+    &_selfie_photo {
+        width: calc(100% - 3px);
+        height: 200px;
+        border: 1px dashed gray;
+        background-color: #f1f1f1;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        line-height: 200px;
+        float: right;
+    }
+
+    &_detail_area {
+        padding: 4px 20px;
+
+        span {
+            color: gray;
+            font-size: 12px;
+        }
+
+        p {
+            color: gray;
+            font-size: 12px;
+        }
+
+        .admin_info {
+            color: lightgrey;
+        }
+    }
+
+    &_review_msg_btn {
+        padding-right: 10px;
+        button {
+            background-color: @white !important;
+            border: 1px solid lightgrey !important;
+            color: gray;
+        }
+    }
+
+    &_review_submit_btn {
+        button {
+            background-color: @red !important;
+
+            span {
+                color: @white !important;
+                font-size: 14px;
+            }
+        }
+    }
+
+    .submit_area {
+        margin-bottom: 20px;
+    }
+}

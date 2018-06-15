@@ -2,101 +2,75 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { compose } from 'recompose';
-import { Icon, Row, Col, Button, Input, Layout, DatePicker } from 'antd';
+import { Icon, Row, Col, Button, Input, Layout, DatePicker, Pagination } from 'antd';
 import locale from 'antd/lib/date-picker/locale/en_US';
 import { connectAuth, authActionCreators } from 'core';
 import { promisify } from '../../utilities';
 import logo from 'assets/img/logo.png';
+import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
+import ListItem from '../../components/ListItem/ListItem';
 
-const { Content, Header } = Layout;
+const { Content, Header, Footer } = Layout;
 
 class DashboardContainer extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      first_name: '',
-      last_name: '',
-      birthday:'',
-      document_expire:'',
-      nationality: '',
-      document_id:'',
-      isFilled: false
+      item: {
+        firstname: 'Galen',
+        lastname: 'Danziger', 
+        email: 'galen@norestlab.com',
+        birthday: '09-21-1991',
+        address: '2633 Fake Street, Sanfranciso, CA',
+        updated_at: 'Changed 8h ago',
+        country: 'USA',
+        docType: 'passport',
+        docId: '12345678',
+        expire_at: '2014-02-14',
+        admin_email: 'admin@gmail.com'
+      },
+      filterOptions: [
+        { name: 'ALL' },
+        { name: 'NO_SUBMISSION_YET' },
+        { name: 'PENDING' },
+        { name: 'APPROVED' },
+        { name: 'ACTION_REQUESTED' },
+        { name: 'BLOCKED' }
+      ]
     }
-  }
-
-  onChangeData = (type, evt) => {
-    switch(type) {
-      case 'firstname':
-        this.setState(...this.state, {first_name: evt.target.value});
-        break;
-      case 'lastname':
-        this.setState(...this.state, {last_name: evt.target.value});
-        break;
-      case 'nationality':
-        this.setState(...this.state, {nationality: evt.target.value});
-        break;
-      case 'documentid':
-        this.setState(...this.state, {document_id: evt.target.value});
-        break;
-    }
-  }
-
-  setBirthday = (date, dateString) => {
-    this.setState(...this.state, {birthday: dateString});
-  }
-  
-  setDocExpireDate = (date, dateString) => {
-    this.setState(...this.state, {document_expire: dateString});
-  }
-
-  showUploadPage = () => {
-    this.props.history.push('/upload');
-  }
-
-  checkInputStatus = () => {
-    if(this.state.first_name !== '' && this.state.last_name !== '' && this.state.nationality !== '' && this.state.document_id !== ''
-      && this.state.birthday !== '' && this.state.document_expire !== '') {
-      this.setState(...this.state, {isFilled: true});
-    } else {
-      this.setState(...this.state, {isFilled: false});
-    }
-  }
-
-  showSelfiePage = () => {
-    promisify(this.props.updateUser, {
-      token: this.props.user.token,
-      firstname: this.state.first_name,
-      lastname: this.state.last_name,
-      dob: this.state.birthday,
-      documentExpireDate: this.state.document_expire,
-      nationalityCountry: this.state.nationality,
-      documentId: this.state.document_id
-    })
-      .then((user) => {
-        console.log(user);
-        this.props.history.push('/upload/selfie');
-      })
-      .catch(e => console.log(e));
   }
 
   render () {
     return (
-      <div className="block display_match">
+      <div className="block dashboard">
         <Layout>
-          <Header className="header"></Header>
+          <Header className="header">
+            <Row>
+              <Col span={6} offset={1}>
+                <Input className="search_input" placeholder="Search Email" suffix={<Icon style={{ fontSize: 16 }} type="search" /> }/> 
+              </Col>
+              <Col span={5} offset={12}>
+                <DropdownSelect placeholder="All" defaultValue="ALL" options={this.state.filterOptions}/>
+              </Col>
+            </Row>
+          </Header>
           <Layout>
             <Content className="main">
-              <Row className="sign_logo_area">
-                <Col className="mark" span={5} offset={5}>
-                  <img alt="true" src={logo} className="logo"/>
-                </Col>
-                <Col span={12} className="title_area">
-                  <Row className="row_title"><Col><span  className="logo_title">NO REST</span></Col></Row>
-                  <Row className="row_title"><Col><span className="logo_title">LABS</span></Col></Row>
-                </Col>
-              </Row>
+              <div className="dashboard_list">
+                <Row>
+                  <Col span={22} offset={1} className="user_item">
+                    <ListItem data={this.state.item} />
+                  </Col>
+                  <Col span={22} offset={1} className="user_item">
+                    <ListItem data={this.state.item} />
+                  </Col>
+                </Row>
+              </div>
             </Content>
           </Layout>
+          <Footer className="footer">
+            <Pagination defaultCurrent={1} total={100} />
+          </Footer>
         </Layout>
       </div>
     );

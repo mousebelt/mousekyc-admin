@@ -1,8 +1,62 @@
-.display_match {
-    width: 600px !important;
-    height: 600px !important;
+.dashboard {
+    min-width: 950px !important;
+    min-height: 700px !important;
 
     .mark {
         text-align: right;
+    }
+
+    .search_input {
+        height: 40px !important;
+    }
+
+    .header {
+        height: 100px !important;
+        padding-top: 20px !important;
+    }
+
+    .footer {
+        text-align: center;
+        background-color: #f1f1f1;
+    }
+
+    &_list {
+        widows: 100%;
+        height: 520px;
+        overflow: auto;
+        padding-top: 50px;
+        padding-left: 25px;
+        padding-right: 25px;
+        background-color: #f1f1f1;
+
+        .user_item {
+            margin-bottom: 20px;
+        }
+    }
+
+    .ant-pagination {
+        .ant-pagination-item {
+            border-radius: 50% !important;
+        }
+
+        .ant-pagination-item-link {
+            border-radius: 50% !important;
+        }
+
+        .ant-pagination-prev {
+            margin-right: 20px;
+        }
+
+        .ant-pagination-next {
+            margin-left: 20px;
+        }
+
+        .ant-pagination-item-active a {
+            color: @red;
+        }
+
+        .ant-pagination-item-active {
+            border-color: lightgray;
+        }
     }
 }
