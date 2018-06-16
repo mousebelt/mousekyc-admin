@@ -16,7 +16,6 @@ import { KycService } from '../../../services';
 
 export function* asyncLoginRequest({ payload, resolve, reject }) {
   const { email, password } = payload;
-  console.log(payload);
   try {
     const response = yield call(KycService,
       {

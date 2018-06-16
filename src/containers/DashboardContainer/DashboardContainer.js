@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { compose } from 'recompose';
 import { Icon, Row, Col, Button, Input, Layout, DatePicker, Pagination } from 'antd';
 import locale from 'antd/lib/date-picker/locale/en_US';
-import { connectAuth, authActionCreators } from 'core';
+import { connectAuth, connectSubmission, submissionActionCreators } from 'core';
 import { promisify } from '../../utilities';
 import logo from 'assets/img/logo.png';
 import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
@@ -16,19 +16,6 @@ class DashboardContainer extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      item: {
-        firstname: 'Galen',
-        lastname: 'Danziger', 
-        email: 'galen@norestlab.com',
-        birthday: '09-21-1991',
-        address: '2633 Fake Street, Sanfranciso, CA',
-        updated_at: 'Changed 8h ago',
-        country: 'USA',
-        docType: 'passport',
-        docId: '12345678',
-        expire_at: '2014-02-14',
-        admin_email: 'admin@gmail.com'
-      },
       filterOptions: [
         { name: 'ALL' },
         { name: 'NO_SUBMISSION_YET' },
@@ -36,8 +23,31 @@ class DashboardContainer extends PureComponent {
         { name: 'APPROVED' },
         { name: 'ACTION_REQUESTED' },
         { name: 'BLOCKED' }
-      ]
+      ],
+      submissionList: null
     }
+  }
+
+  componentDidMount() {
+    this.loadSubmissionsPerPage(0, 16);
+  }
+
+  onChangePagination = (page, pageSize) => {
+    this.loadSubmissionsPerPage((page - 1) * pageSize, pageSize);
+  }
+
+  loadSubmissionsPerPage(offset, count) {
+    let { user } = this.props;
+    promisify(this.props.getSubmissionList, { 
+      token: user.token,
+      offset: offset,
+      count: count,
+    })
+      .then((res) => {
+        if (res.status === 200)
+          this.setState(...this.state, {submissionList: res.data});
+      })
+      .catch(e => console.log(e));
   }
 
   render () {
@@ -50,26 +60,27 @@ class DashboardContainer extends PureComponent {
                 <Input className="search_input" placeholder="Search Email" suffix={<Icon style={{ fontSize: 16 }} type="search" /> }/> 
               </Col>
               <Col span={5} offset={12}>
-                <DropdownSelect placeholder="All" defaultValue="ALL" options={this.state.filterOptions}/>
+                <DropdownSelect defaultValue="ALL" options={this.state.filterOptions}/>
               </Col>
             </Row>
           </Header>
           <Layout>
             <Content className="main">
               <div className="dashboard_list">
-                <Row>
-                  <Col span={22} offset={1} className="user_item">
-                    <ListItem data={this.state.item} />
-                  </Col>
-                  <Col span={22} offset={1} className="user_item">
-                    <ListItem data={this.state.item} />
-                  </Col>
-                </Row>
+                {
+                  (this.state.submissionList && this.state.submissionList.result.length) ? (
+                   this.state.submissionList.result.map((item, index) => (
+                  <Row key={index}>
+                    <Col span={22} offset={1} className="user_item">
+                      <ListItem data={item} />
+                    </Col>
+                  </Row>))) : "No items to show..."
+                }
               </div>
             </Content>
           </Layout>
           <Footer className="footer">
-            <Pagination defaultCurrent={1} total={100} />
+            <Pagination defaultCurrent={1} defaultPageSize={16} total={this.state.submissionList ? this.state.submissionList.total : 0} onChange={this.onChangePagination}/>
           </Footer>
         </Layout>
       </div>
@@ -77,20 +88,22 @@ class DashboardContainer extends PureComponent {
   }  
 }
 
-const mapStateToProps = ({auth}) => ({
-  user: auth.user
+const mapStateToProps = ({auth, submission}) => ({
+  user: auth.user,
+  list: submission.list
 });
 
 const mapDisptachToProps = (dispatch) => {
   const {
-    updateUser
-  } = authActionCreators
+    getSubmissionList
+  } = submissionActionCreators
 
   return bindActionCreators({
-    updateUser
+    getSubmissionList
   }, dispatch);
 }
 
 export default compose(
-  connectAuth(mapStateToProps, mapDisptachToProps),
+  connectSubmission(mapStateToProps, mapDisptachToProps),
+  connectAuth(mapStateToProps, undefined),
 )(DashboardContainer);

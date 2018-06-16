@@ -24,9 +24,46 @@ class ListItem extends PureComponent {
     this.setState(...this.state, {isExpand: !this.state.isExpand});
   }
 
+  getTimeDiff(diff) {
+      let divideBy = { 
+                       y: 31104000000,
+                       m: 2592000000,
+                       w:604800000,
+                       d:86400000, 
+                       h:3600000, 
+                       n:60000, 
+                       s:1000 
+                     };	
+      let y = Math.floor( diff/divideBy['y']);
+      let m = Math.floor( diff/divideBy['m']);
+      let w = Math.floor( diff/divideBy['w']);
+      let d = Math.floor( diff/divideBy['d']);
+      let h = Math.floor( diff/divideBy['h']);
+      let n = Math.floor( diff/divideBy['n']);
+      let s = Math.floor( diff/divideBy['s']);
+      
+      if (y) {
+        return y + ' years';
+      } else if(m) {
+        return m + ' months';
+      } else if(w) {
+        return m + ' weeks';
+      } else if(d) {
+        return d + ' days';
+      } else if (h) {
+        return h + ' hours';
+      } else if(n) {
+        return n + ' minutes';
+      } else if(s) {
+        return s + ' seconds';
+      }
+  }
+
   render() {
-    const { data } = this.props;
-    console.log(data);
+    const { data } = this.props;    
+    if (!data) return null;
+    let diff_time = this.getTimeDiff(data.time_diff);
+
     return (
       <div>
         <Layout className="item">
@@ -44,7 +81,7 @@ class ListItem extends PureComponent {
                 <span className="item_email">{data.email}</span>
               </Col>
               <Col span={4}>
-                <span className="item_update">{data.updated_at}</span>
+                <span className="item_update">Changed: {diff_time} ago</span>
               </Col>
               <Col span={6}>
                 <DropdownSelect placeholder="Status" defaultValue="PENDING" className="item_status" options={this.state.statusOptions}/>
@@ -77,13 +114,13 @@ class ListItem extends PureComponent {
                   <span>{data.lastname}</span>
                 </Col>
                 <Col span={6}>
-                  <span>{data.country + ' ' + data.docType}</span>
+                  <span>{data.nationalityCountry + ' ' + data.documentType}</span>
                 </Col>
                 <Col span={4}>
-                  <span>ID:{data.docId}</span>
+                  <span>ID:{data.documentId}</span>
                 </Col>
                 <Col span={5}>
-                  <span>Expires {data.expire_at}</span>
+                  <span>Expires {data.documentExpireDate}</span>
                 </Col>
               </Row>
               <Row className="item_detail_area">
@@ -91,18 +128,18 @@ class ListItem extends PureComponent {
                   <span>{data.email}</span>
                 </Col>
                 <Col span={4}>
-                  <span>Born {data.birthday}</span>
+                  <span>Born {data.dob}</span>
                 </Col>
                 <Col span={6}>
-                  <p>{data.address}</p>
+                  <p>2633 Fake street, Sanfranciso, CA</p>
                 </Col>
                 <Col span={4}>
-                  <span>{data.country}</span>
+                  <span>{data.residenceCountry}</span>
                 </Col>
               </Row>
               <Row className="item_detail_area">
                 <Col span={5}>
-                  <span className="admin_info">Admin: {data.admin_email}</span>
+                  <span className="admin_info">{data.adminContact ? 'Admin:' + data.adminContact : ''}</span>
                 </Col>
               </Row>
               <Row className="item_detail_area submit_area">
