@@ -9,14 +9,13 @@ class DropdownSelect extends PureComponent {
 
   render() {
     const { className, defaultValue, options, ...props } = this.props;
-
     return (
       <Select
         {...props}
         className={`nrl-dropdown${className ? ' ' + className : ''}`}
         size="large"
         onChange={(value) => this.onChangeItem(value)}
-        defaultValue={defaultValue}
+        value={defaultValue}
       >
         {
           (options && options.length) && (

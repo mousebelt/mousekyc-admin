@@ -1,5 +1,10 @@
 import React, { PureComponent } from 'react';
+import { bindActionCreators } from 'redux';
+import { compose } from 'recompose';
 import { Icon, Row, Col, Button, Layout } from 'antd';
+import { connectAuth, connectSubmission, submissionActionCreators } from 'core';
+import { promisify } from '../../utilities';
+
 import DropdownSelect from '../DropdownSelect/DropdownSelect';
 
 const { Content, Header } = Layout;
@@ -16,12 +21,32 @@ class ListItem extends PureComponent {
         { name: 'APPROVED' },
         { name: 'ACTION_REQUESTED' },
         { name: 'BLOCKED' }
-      ]
+      ],
+      documents: null
     }
   }
 
   showDetailItem = () => {
-    this.setState(...this.state, {isExpand: !this.state.isExpand});
+    this.setState(...this.state, {isExpand: !this.state.isExpand}, () => {
+      if (this.state.isExpand) {
+        const { user, data } = this.props;
+        promisify(this.props.getUserDocument, { 
+          token: user.token,
+          useremail: data.email
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              console.log(res);
+              this.setState(...this.state, {documents: res.data});
+            }
+          })
+          .catch(e => console.log(e));
+      }
+    });
+  }
+
+  onSelectItem = (filterOption) => {
+    
   }
 
   getTimeDiff(diff) {
@@ -60,10 +85,9 @@ class ListItem extends PureComponent {
   }
 
   render() {
-    const { data } = this.props;    
+    const { data } = this.props;
     if (!data) return null;
     let diff_time = this.getTimeDiff(data.time_diff);
-
     return (
       <div>
         <Layout className="item">
@@ -84,7 +108,7 @@ class ListItem extends PureComponent {
                 <span className="item_update">Changed: {diff_time} ago</span>
               </Col>
               <Col span={6}>
-                <DropdownSelect placeholder="Status" defaultValue="PENDING" className="item_status" options={this.state.statusOptions}/>
+                <DropdownSelect placeholder="Status" onSelectItem={this.onSelectItem} defaultValue={data.approvalStatus} className="item_status" options={this.state.statusOptions}/>
               </Col>
               <Col span={4}>
                 <Button className="continue_btn item_check" onClick={this.showDetailItem}>Check</Button>
@@ -95,15 +119,21 @@ class ListItem extends PureComponent {
           <Layout>
             <Content className="main">
               <Row className="item_photo_area">
-                <Col span={12}>
-                  <div className="item_id_photo">
-                    <span>ID photo here </span>
-                  </div>
+                <Col span={12}> 
+                  { this.state.documents ? 
+                    <img className="item_id_photo" src={this.state.documents[0].identityDocument}/> :
+                    <div className="item_id_photo_area">
+                      <span>ID photo here </span>
+                    </div>
+                  }
                 </Col>
                 <Col span={12}>
-                  <div className="item_selfie_photo">
-                    <span>Selfie photo here </span>
-                  </div>
+                  { this.state.documents ? 
+                    <img className="item_selfie_photo" src={this.state.documents[1].selfie}/> :
+                    <div className="item_selfie_photo_area">
+                      <span>Selfie photo here </span>
+                    </div>
+                  }
                 </Col>
               </Row>
               <Row className="item_detail_area">
@@ -160,4 +190,21 @@ class ListItem extends PureComponent {
   }
 }
 
-export default ListItem;
+const mapStateToProps = ({auth, submission}) => ({
+  user: auth.user
+});
+
+const mapDisptachToProps = (dispatch) => {
+  const {
+    getUserDocument
+  } = submissionActionCreators
+
+  return bindActionCreators({
+    getUserDocument
+  }, dispatch);
+}
+
+export default compose(
+  connectSubmission(mapStateToProps, mapDisptachToProps),
+  connectAuth(mapStateToProps, undefined),
+)(ListItem);

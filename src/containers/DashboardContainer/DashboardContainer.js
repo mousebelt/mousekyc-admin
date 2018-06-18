@@ -24,30 +24,38 @@ class DashboardContainer extends PureComponent {
         { name: 'ACTION_REQUESTED' },
         { name: 'BLOCKED' }
       ],
-      submissionList: null
+      submissionList: null,
+      filterOption: 'ALL'
     }
   }
 
   componentDidMount() {
-    this.loadSubmissionsPerPage(0, 16);
+    this.loadSubmissionsPerPage(0, 16, this.state.filterOption);
   }
 
   onChangePagination = (page, pageSize) => {
-    this.loadSubmissionsPerPage((page - 1) * pageSize, pageSize);
+    this.loadSubmissionsPerPage((page - 1) * pageSize, pageSize, this.state.filterOption);
   }
 
-  loadSubmissionsPerPage(offset, count) {
+  loadSubmissionsPerPage(offset, count, approvalStatus) {
     let { user } = this.props;
     promisify(this.props.getSubmissionList, { 
       token: user.token,
       offset: offset,
       count: count,
+      approvalStatus: approvalStatus !== 'ALL' ? approvalStatus : null
     })
       .then((res) => {
         if (res.status === 200)
           this.setState(...this.state, {submissionList: res.data});
       })
       .catch(e => console.log(e));
+  }
+
+  onSelectItem = (filterOption) => {
+    this.setState(...this.state, {filterOption: filterOption,submissionList: null}, () => {
+      this.loadSubmissionsPerPage(0, 16, filterOption);
+    });
   }
 
   render () {
@@ -60,7 +68,7 @@ class DashboardContainer extends PureComponent {
                 <Input className="search_input" placeholder="Search Email" suffix={<Icon style={{ fontSize: 16 }} type="search" /> }/> 
               </Col>
               <Col span={5} offset={12}>
-                <DropdownSelect defaultValue="ALL" options={this.state.filterOptions}/>
+                <DropdownSelect defaultValue="ALL" onSelectItem={this.onSelectItem} options={this.state.filterOptions}/>
               </Col>
             </Row>
           </Header>
