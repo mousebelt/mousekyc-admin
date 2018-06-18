@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { bindActionCreators } from 'redux';
 import { compose } from 'recompose';
-import { Icon, Row, Col, Button, Layout } from 'antd';
+import { Icon, Row, Col, Button, Input, Layout } from 'antd';
 import { connectAuth, connectSubmission, submissionActionCreators } from 'core';
 import { promisify } from '../../utilities';
 
@@ -22,8 +22,15 @@ class ListItem extends PureComponent {
         { name: 'ACTION_REQUESTED' },
         { name: 'BLOCKED' }
       ],
-      documents: null
+      documents: null,
+      reviewMsg: '',
+      currentStatus: ''
     }
+  }
+
+  componentWillMount() {
+    const { data } = this.props;
+    this.setState(...this.state, {currentStatus: data.approvalStatus});
   }
 
   showDetailItem = () => {
@@ -45,8 +52,29 @@ class ListItem extends PureComponent {
     });
   }
 
+  changeUserStatus = () => {
+    const { user, data } = this.props;
+      promisify(this.props.updateUserStatus, { 
+        token: user.token,
+        useremail: data.email,
+        approvalStatus: this.state.currentStatus,
+        approvalDescription: this.state.reviewMsg ? this.state.reviewMsg : ''
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(res);
+          }
+        })
+        .catch(e => console.log(e));
+  }
+
   onSelectItem = (filterOption) => {
-    
+    this.setState(...this.state, {currentStatus: filterOption});
+
+  }
+
+  onChangeReview = (evt) => {
+    this.setState(...this.state, {reviewMsg: evt.target.value})
   }
 
   getTimeDiff(diff) {
@@ -108,7 +136,7 @@ class ListItem extends PureComponent {
                 <span className="item_update">Changed: {diff_time} ago</span>
               </Col>
               <Col span={6}>
-                <DropdownSelect placeholder="Status" onSelectItem={this.onSelectItem} defaultValue={data.approvalStatus} className="item_status" options={this.state.statusOptions}/>
+                <DropdownSelect placeholder="Status" onSelectItem={this.onSelectItem} defaultValue={this.state.currentStatus} className="item_status" options={this.state.statusOptions}/>
               </Col>
               <Col span={4}>
                 <Button className="continue_btn item_check" onClick={this.showDetailItem}>Check</Button>
@@ -174,10 +202,10 @@ class ListItem extends PureComponent {
               </Row>
               <Row className="item_detail_area submit_area">
                 <Col span={6} offset={13} className="item_review_msg_btn">
-                  <Button className="continue_btn">ADD REVIEW MESSAGE HERE</Button>
+                  <Input className="review_msg" value={this.state.reviewMsg} placeholder="ADD REVIEW MESSAGE HERE" onChange={this.onChangeReview} />
                 </Col>
                 <Col span={5} className="item_review_submit_btn">
-                  <Button className="continue_btn">SUBMIT</Button>
+                  <Button className="continue_btn" onClick={this.changeUserStatus}>SUBMIT</Button>
                 </Col>
               </Row>
             </Content>
@@ -196,11 +224,13 @@ const mapStateToProps = ({auth, submission}) => ({
 
 const mapDisptachToProps = (dispatch) => {
   const {
-    getUserDocument
+    getUserDocument,
+    updateUserStatus
   } = submissionActionCreators
 
   return bindActionCreators({
-    getUserDocument
+    getUserDocument,
+    updateUserStatus
   }, dispatch);
 }
 

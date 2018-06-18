@@ -68,11 +68,11 @@ class DashboardContainer extends PureComponent {
                 <Input className="search_input" placeholder="Search Email" suffix={<Icon style={{ fontSize: 16 }} type="search" /> }/> 
               </Col>
               <Col span={5} offset={12}>
-                <DropdownSelect defaultValue="ALL" onSelectItem={this.onSelectItem} options={this.state.filterOptions}/>
+                <DropdownSelect defaultValue={this.state.filterOption} onSelectItem={this.onSelectItem} options={this.state.filterOptions}/>
               </Col>
             </Row>
           </Header>
-          <Layout>
+              <Layout>
             <Content className="main">
               <div className="dashboard_list">
                 {

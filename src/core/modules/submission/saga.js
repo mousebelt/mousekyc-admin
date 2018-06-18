@@ -9,7 +9,8 @@ import {
 import {
   submissionActionCreators,
   SUBMISSION_REQUEST,
-  DOCUMENT_REQUEST
+  DOCUMENT_REQUEST,
+  USER_STATUS_REQUEST
 } from './actions';
 
 import { KycService } from '../../../services';
@@ -53,6 +54,30 @@ export function* asyncDocumentRequest({ payload, resolve, reject }) {
   }
 }
 
+export function* asyncUserStatusRequest({ payload, resolve, reject }) {
+  const { token, useremail, approvalStatus, approvalDescription } = payload;
+  try {
+    const response = yield call(KycService,
+      {
+        api: `/admin/approve_user`,
+        method: 'POST',
+        params: {
+          token: token,
+          useremail: useremail,
+          approvalStatus: approvalStatus,
+          approvalDescription: approvalDescription
+        }
+      });
+    if (response.status === 200) {
+      resolve(response);
+    } else {
+      reject(response.msg);
+    }
+  } catch (e) {
+    reject(e);
+  }
+}
+
 export function* watchSubmissionRequest() {
   while (true) {
     const action = yield take(SUBMISSION_REQUEST);
@@ -67,9 +92,17 @@ export function* watchDocumentRequest() {
   }
 }
 
+export function* watchUserStatusRequest() {
+  while (true) {
+    const action = yield take(USER_STATUS_REQUEST);
+    yield* asyncUserStatusRequest(action);
+  }
+}
+
 export default function* () {
   yield all([
     fork(watchSubmissionRequest),
-    fork(watchDocumentRequest)
+    fork(watchDocumentRequest),
+    fork(watchUserStatusRequest)
   ]);
 }

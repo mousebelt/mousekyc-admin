@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import { submissionActionCreators } from './actions';
 
-function mapStateToProps({ auth }) {
+function mapStateToProps({ submission }) {
   return {
-    auth,
+    submission,
   };
 }
 
