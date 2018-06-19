@@ -24,7 +24,7 @@ class ListItem extends PureComponent {
       ],
       documents: null,
       reviewMsg: '',
-      currentStatus: ''
+      currentStatus: null
     }
   }
 
@@ -33,23 +33,34 @@ class ListItem extends PureComponent {
     this.setState(...this.state, {currentStatus: data.approvalStatus});
   }
 
-  showDetailItem = () => {
-    this.setState(...this.state, {isExpand: !this.state.isExpand}, () => {
-      if (this.state.isExpand) {
-        const { user, data } = this.props;
-        promisify(this.props.getUserDocument, { 
-          token: user.token,
-          useremail: data.email
-        })
-          .then((res) => {
-            if (res.status === 200) {
-              console.log(res);
-              this.setState(...this.state, {documents: res.data});
-            }
-          })
-          .catch(e => console.log(e));
+  componentWillReceiveProps(nextProps) {
+    if (this.props.selectedIndex !== nextProps.selectedIndex) {
+      if (this.props.itemIndex === nextProps.selectedIndex) {
+        this.setState(...this.state, {isExpand: !this.state.isExpand}, () => {
+          if (this.state.isExpand) {
+            const { user, data } = this.props;
+            promisify(this.props.getUserDocument, { 
+              token: user.token,
+              useremail: data.email
+            })
+              .then((res) => {
+                if (res.status === 200) {
+                  this.setState(...this.state, {documents: res.data});
+                }
+              })
+              .catch(e => console.log(e));
+          }
+        });
+      } else {
+        this.setState({isExpand: false});
       }
-    });
+    }
+  }
+
+  showDetailItem = () => {
+    const { itemIndex } = this.props;
+    this.props.onSelectList(itemIndex);
+    this.setState(...this.state, {isExpand: !this.state.isExpand});
   }
 
   changeUserStatus = () => {
@@ -62,7 +73,7 @@ class ListItem extends PureComponent {
       })
         .then((res) => {
           if (res.status === 200) {
-            console.log(res);
+            this.setState({isExpand: false});
           }
         })
         .catch(e => console.log(e));
@@ -70,7 +81,6 @@ class ListItem extends PureComponent {
 
   onSelectItem = (filterOption) => {
     this.setState(...this.state, {currentStatus: filterOption});
-
   }
 
   onChangeReview = (evt) => {
@@ -114,8 +124,10 @@ class ListItem extends PureComponent {
 
   render() {
     const { data } = this.props;
+    
     if (!data) return null;
     let diff_time = this.getTimeDiff(data.time_diff);
+    
     return (
       <div>
         <Layout className="item">
@@ -149,7 +161,7 @@ class ListItem extends PureComponent {
               <Row className="item_photo_area">
                 <Col span={12}> 
                   { this.state.documents ? 
-                    <img className="item_id_photo" src={this.state.documents[0].identityDocument}/> :
+                    <img className="item_id_photo" src={this.state.documents[0] ? this.state.documents[0].identityDocument : null}/> :
                     <div className="item_id_photo_area">
                       <span>ID photo here </span>
                     </div>
@@ -157,7 +169,7 @@ class ListItem extends PureComponent {
                 </Col>
                 <Col span={12}>
                   { this.state.documents ? 
-                    <img className="item_selfie_photo" src={this.state.documents[1].selfie}/> :
+                    <img className="item_selfie_photo" src={this.state.documents[1] ? this.state.documents[1].selfie : null}/> :
                     <div className="item_selfie_photo_area">
                       <span>Selfie photo here </span>
                     </div>
@@ -197,12 +209,12 @@ class ListItem extends PureComponent {
               </Row>
               <Row className="item_detail_area">
                 <Col span={5}>
-                  <span className="admin_info">{data.adminContact ? 'Admin:' + data.adminContact : ''}</span>
+                  <span className="admin_info">{data.adminContact ? 'Admin: ' + data.adminContact : ''}</span>
                 </Col>
               </Row>
               <Row className="item_detail_area submit_area">
                 <Col span={6} offset={13} className="item_review_msg_btn">
-                  <Input className="review_msg" value={this.state.reviewMsg} placeholder="ADD REVIEW MESSAGE HERE" onChange={this.onChangeReview} />
+                  <Input className="review_msg" value={this.state.reviewMsg} readOnly={this.state.currentStatus !== 'ACTION_REQUESTED' ? true: false} placeholder="ADD REVIEW MESSAGE HERE" onChange={this.onChangeReview} />
                 </Col>
                 <Col span={5} className="item_review_submit_btn">
                   <Button className="continue_btn" onClick={this.changeUserStatus}>SUBMIT</Button>

@@ -2,11 +2,9 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { compose } from 'recompose';
-import { Icon, Row, Col, Button, Input, Layout, DatePicker, Pagination } from 'antd';
-import locale from 'antd/lib/date-picker/locale/en_US';
+import { Icon, Row, Col, Input, Layout, Pagination } from 'antd';
 import { connectAuth, connectSubmission, submissionActionCreators } from 'core';
 import { promisify } from '../../utilities';
-import logo from 'assets/img/logo.png';
 import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
 import ListItem from '../../components/ListItem/ListItem';
 
@@ -25,37 +23,61 @@ class DashboardContainer extends PureComponent {
         { name: 'BLOCKED' }
       ],
       submissionList: null,
-      filterOption: 'ALL'
+      filterOption: 'ALL',
+      searchKeyword: '',
+      selectedIndex: -1,
+      page: 1,
+      pageSize: 16
     }
   }
 
   componentDidMount() {
-    this.loadSubmissionsPerPage(0, 16, this.state.filterOption);
+    this.loadSubmissionsPerPage(0, 16, this.state.filterOption,null);
   }
 
   onChangePagination = (page, pageSize) => {
-    this.loadSubmissionsPerPage((page - 1) * pageSize, pageSize, this.state.filterOption);
+    this.setState(...this.state, {page: page, pageSize: pageSize}, () => {
+      this.loadSubmissionsPerPage((page - 1) * pageSize, pageSize, this.state.filterOption, this.state.searchKeyword ? this.state.searchKeyword : null);
+    });
   }
 
-  loadSubmissionsPerPage(offset, count, approvalStatus) {
+  loadSubmissionsPerPage(offset, count, approvalStatus, searchKeyword) {
     let { user } = this.props;
-    promisify(this.props.getSubmissionList, { 
-      token: user.token,
-      offset: offset,
-      count: count,
-      approvalStatus: approvalStatus !== 'ALL' ? approvalStatus : null
-    })
-      .then((res) => {
-        if (res.status === 200)
-          this.setState(...this.state, {submissionList: res.data});
+    this.setState(...this.state, {submissionList: null}, () => {
+      promisify(this.props.getSubmissionList, { 
+        token: user.token,
+        offset: offset,
+        count: count,
+        approvalStatus: approvalStatus !== 'ALL' ? approvalStatus : null,
+        useremail: searchKeyword
       })
-      .catch(e => console.log(e));
+        .then((res) => {
+          if (res.status === 200)
+            this.setState(...this.state, {submissionList: res.data});
+        })
+        .catch(e => console.log(e));
+    });
   }
 
   onSelectItem = (filterOption) => {
     this.setState(...this.state, {filterOption: filterOption,submissionList: null}, () => {
-      this.loadSubmissionsPerPage(0, 16, filterOption);
+      this.loadSubmissionsPerPage(0, 16, filterOption, null);
     });
+  }
+
+  onSelectList = (selectedIndex) => {
+    this.setState({selectedIndex: selectedIndex});
+  }
+
+  handleSearchChange = (e) => {
+    this.setState({ searchKeyword: e.target.value });
+  }
+
+  searchEmail = (e) => {
+    if(e.keyCode == 13) {
+      let searchKeyword = e.target.value;
+      this.loadSubmissionsPerPage(0, 16, this.state.filterOption, searchKeyword);
+    }
   }
 
   render () {
@@ -65,7 +87,7 @@ class DashboardContainer extends PureComponent {
           <Header className="header">
             <Row>
               <Col span={6} offset={1}>
-                <Input className="search_input" placeholder="Search Email" suffix={<Icon style={{ fontSize: 16 }} type="search" /> }/> 
+                <Input className="search_input" placeholder="Search Email" onKeyDown={this.searchEmail} onChange={this.handleSearchChange} suffix={<Icon style={{ fontSize: 16 }} type="search" /> }/> 
               </Col>
               <Col span={5} offset={12}>
                 <DropdownSelect defaultValue={this.state.filterOption} onSelectItem={this.onSelectItem} options={this.state.filterOptions}/>
@@ -78,9 +100,9 @@ class DashboardContainer extends PureComponent {
                 {
                   (this.state.submissionList && this.state.submissionList.result.length) ? (
                    this.state.submissionList.result.map((item, index) => (
-                  <Row key={index}>
+                  <Row key={(this.state.page - 1) * this.state.pageSize + index}>
                     <Col span={22} offset={1} className="user_item">
-                      <ListItem data={item} />
+                      <ListItem data={item} itemIndex={(this.state.page - 1) * this.state.pageSize + index} selectedIndex={this.state.selectedIndex} onSelectList={this.onSelectList}/>
                     </Col>
                   </Row>))) : "No items to show..."
                 }

@@ -9,6 +9,7 @@ class DropdownSelect extends PureComponent {
 
   render() {
     const { className, defaultValue, options, ...props } = this.props;
+
     return (
       <Select
         {...props}

@@ -16,11 +16,11 @@ import {
 import { KycService } from '../../../services';
 
 export function* asyncSubmissionRequest({ payload, resolve, reject }) {
-  const { token, offset, count, approvalStatus } = payload;
+  const { token, offset, count, approvalStatus, useremail } = payload;
   try {
     const response = yield call(KycService,
       {
-        api: `/admin/submission_list?token=${token}&count=${count}&offset=${offset}${approvalStatus ? '&approvalStatus=' + approvalStatus : ''}`,
+        api: `/admin/submission_list?token=${token}&count=${count}&offset=${offset}${approvalStatus ? '&approvalStatus=' + approvalStatus : ''}${useremail ? '&useremail=' + useremail : ''}`,
         method: 'GET',
         params: {}
       });
