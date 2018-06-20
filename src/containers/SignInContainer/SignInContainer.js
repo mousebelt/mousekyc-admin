@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'; 
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { Icon, Row, Col, Button, Input, Layout } from 'antd';
+import { Row, Col, Button, Input, Layout } from 'antd';
 import { connectAuth, authActionCreators } from 'core';
 import { promisify } from '../../utilities';
 import { validateEmail } from '../../services/common';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { store } from 'core';
 import RoutesContainer from 'containers/RoutesContainer/RoutesContainer';
 import PrivateRoute from '../components/PrivateRoute/PrivateRoute';
@@ -18,7 +18,6 @@ class App extends Component {
           <div className="App">
             <div className="content">
               <Switch>
-                {/* <Redirect exact from="/" to="/signin"/> */}
                 <Route path="/signin" exact component={SignInContainer}/>
                 <Route exact path="/signup" component={SignUpContainer}/>
                 <Route exact path="/404" component={PageNotFound}/>

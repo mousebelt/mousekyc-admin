@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { bindActionCreators } from 'redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import SignInContainer from 'containers/SignInContainer/SignInContainer';

@@ -214,7 +214,7 @@ class ListItem extends PureComponent {
               </Row>
               <Row className="item_detail_area submit_area">
                 <Col span={6} offset={13} className="item_review_msg_btn">
-                  <Input className="review_msg" value={this.state.reviewMsg} readOnly={this.state.currentStatus !== 'ACTION_REQUESTED' ? true: false} placeholder="ADD REVIEW MESSAGE HERE" onChange={this.onChangeReview} />
+                  <Input className="review_msg" value={this.state.reviewMsg} disabled={this.state.currentStatus !== 'ACTION_REQUESTED' ? true: false} placeholder="ADD REVIEW MESSAGE HERE" onChange={this.onChangeReview} />
                 </Col>
                 <Col span={5} className="item_review_submit_btn">
                   <Button className="continue_btn" onClick={this.changeUserStatus}>SUBMIT</Button>

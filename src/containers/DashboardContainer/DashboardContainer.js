@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react'; 
-import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { compose } from 'recompose';
 import { Icon, Row, Col, Input, Layout, Pagination } from 'antd';
@@ -74,7 +73,7 @@ class DashboardContainer extends PureComponent {
   }
 
   searchEmail = (e) => {
-    if(e.keyCode == 13) {
+    if(e.keyCode === 13) {
       let searchKeyword = e.target.value;
       this.loadSubmissionsPerPage(0, 16, this.state.filterOption, searchKeyword);
     }
