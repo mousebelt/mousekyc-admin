@@ -77,6 +77,11 @@ class SignInContainer extends PureComponent {
           <Layout>
             <Content className="main">
               <Row className="sign_logo_area">
+                <Col span={14} offset={5}>
+                  <img alt="true" src={logo} className="logo"/>
+                </Col>
+              </Row>  
+              {/* <Row className="sign_logo_area">
                 <Col span={5} offset={5}>
                   <img alt="true" src={logo} className="logo"/>
                 </Col>
@@ -84,7 +89,7 @@ class SignInContainer extends PureComponent {
                   <Row className="row_title"><Col><span  className="logo_title">NO REST</span></Col></Row>
                   <Row className="row_title"><Col><span className="logo_title">LABS</span></Col></Row>
                 </Col>
-              </Row>
+              </Row> */}
               <Row className="email_area">
                 <Col offset={4} span={16}>
                   { this.state.isFocus ?

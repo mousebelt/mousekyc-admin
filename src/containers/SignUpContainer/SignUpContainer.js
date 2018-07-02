@@ -68,7 +68,15 @@ class SignUpContainer extends PureComponent {
   }
 
   render () {
-    var msg = '';
+    var msg = '';promisify(this.props.signUp, { 
+      email: this.state.email,
+      password: this.state.password
+    })
+      .then((res) => {
+        if (res.status === 200)
+          this.props.history.push('signin');
+      })
+      .catch(e => console.log(e));
         
     return (
       <div className="block">
@@ -81,14 +89,16 @@ class SignUpContainer extends PureComponent {
           <Layout>
             <Content className="main">
               <Row className="sign_logo_area">
-                <Col span={5} offset={5}>
+                <Col span={14} offset={5}>
                   <img alt="true" src={logo} className="logo"/>
                 </Col>
+              </Row>
+              {/* <Row className="sign_logo_area">
                 <Col span={12} className="title_area">
                   <Row className="row_title"><Col><span  className="logo_title">NO REST</span></Col></Row>
                   <Row className="row_title"><Col><span className="logo_title">LABS</span></Col></Row>
                 </Col>
-              </Row>
+              </Row> */}
               <Row className="email_area">
                 <Col offset={4} span={16}>
                   { this.state.isFocus ?
