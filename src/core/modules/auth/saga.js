@@ -28,7 +28,6 @@ export function* asyncLoginRequest({ payload, resolve, reject }) {
       });
     // @TODO: Open next lines after login api is completed
     if (response.status === 200) {
-      // console.log('login response:', response);
       yield put(authActionCreators.loginSuccess({ user: response.data }));
       resolve(response);
     } else {
