@@ -68,16 +68,7 @@ class SignUpContainer extends PureComponent {
   }
 
   render () {
-    var msg = '';promisify(this.props.signUp, { 
-      email: this.state.email,
-      password: this.state.password
-    })
-      .then((res) => {
-        if (res.status === 200)
-          this.props.history.push('signin');
-      })
-      .catch(e => console.log(e));
-        
+    var msg = '';
     return (
       <div className="block">
         <Layout>
