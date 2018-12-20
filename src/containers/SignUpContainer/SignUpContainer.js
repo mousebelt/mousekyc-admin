@@ -19,7 +19,8 @@ class SignUpContainer extends PureComponent {
     this.state = {
       email: '',
       password: '',
-      isFocus: false
+      isFocus: false,
+      msg: ''
     }
   }
 
@@ -54,10 +55,14 @@ class SignUpContainer extends PureComponent {
         password: this.state.password
       })
         .then((res) => {
-          if (res.status === 200)
-            this.props.history.push('signin');
+          if (res.status === 200) this.props.history.push('signin');
+          else {
+            this.setState(...this.state, { msg: res.msg || 'Error occurred!' });
+          }
         })
-        .catch(e => console.log(e));
+        .catch(e => {
+          this.setState(...this.state, { msg: e.msg || 'Error occurred!' });
+        });
     } else {
       this.setState(...this.state, {isEmailValidate: false});
     }
@@ -68,7 +73,6 @@ class SignUpContainer extends PureComponent {
   }
 
   render () {
-    var msg = '';
     return (
       <div className="block">
         <Layout>
@@ -106,7 +110,7 @@ class SignUpContainer extends PureComponent {
               </Row>
               <Row className="msg_area">
                 <Col offset={5} span={16}>
-                  { msg }
+                { this.state.msg || '' }
                 </Col>
               </Row>
               <Row>
